@@ -1,17 +1,11 @@
 import React from "react";
 
-export const TodoLists = (props) => {
-  const { title, id, created_at } = props;
+export const TodoLoader = () => {
   return (
-    <div
-      id="task"
-      className="group flex flex-row items-center justify-between bg-green-100 p-3 rounded-md m-2"
-    >
-      <a href={`/${id}`}>{title}</a>
+    <div className="group flex flex-row items-center justify-between bg-green-100 p-3 rounded-md m-2 h-[48px] animate-pulse">
+      <p className="hidden">Add todo</p>
       <div className="hidden group-hover:flex">
-        <button
-        // onClick="handleEditMode('${todo.id}')"
-        >
+        <button>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
@@ -27,9 +21,7 @@ export const TodoLists = (props) => {
             />
           </svg>
         </button>
-        <button
-        // onClick="(deleteTodo('${todo.id}'))"
-        >
+        <button>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"

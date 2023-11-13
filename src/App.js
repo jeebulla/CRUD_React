@@ -1,9 +1,15 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
-import "./App.css";
 import { getLocalStorage, setLocalStorage } from "./local_storage";
+import { TodoLoader } from "./components/TodoLoader";
+import { TodoLists } from "./components/TodoLists";
+import "./App.css";
+
+const todo_ls_name = process.env.REACT_APP_TODO_LOCAL_STORAGE_NAME;
 
 function App() {
+  const [loadingTodos, setLoadingTodos] = useState(true);
+  const [todos, setTodos] = useState([]);
   const [todoInput, setTodoInput] = useState("");
   const [formError, setFormError] = useState(null);
 
@@ -24,7 +30,6 @@ function App() {
         id: uuidv4(),
         created_at: Date.now(),
       };
-      const todo_ls_name = process.env.REACT_APP_TODO_LOCAL_STORAGE_NAME;
       const todos = getLocalStorage(todo_ls_name);
 
       const new_todos = [...todos, newTodo];
@@ -35,6 +40,19 @@ function App() {
       // showError(error.message);
     }
   };
+
+  const fetch_todo = function () {
+    const _todos = getLocalStorage(todo_ls_name);
+    setTodos(_todos);
+
+    setTimeout(() => {
+      setLoadingTodos(false);
+    }, 5000);
+  };
+
+  useEffect(() => {
+    fetch_todo();
+  }, []);
 
   return (
     <div>
@@ -73,7 +91,33 @@ function App() {
             {formError.errorMessage}
           </span>
         )}
-        <div id="task_log" className="bg-green-50 rounded-md p-2" />
+        {!loadingTodos && todos.length === 0 && (
+          <p className="text-center text-sm my-1">
+            No Todos yet. Your Todo will appear here...
+          </p>
+        )}
+        <section className="bg-green-50 rounded-md p-2">
+          {loadingTodos ? (
+            <>
+              <TodoLoader />
+              <TodoLoader />
+              <TodoLoader />
+            </>
+          ) : (
+            <>
+              {todos.map(({ title, id, created_at }) => {
+                return (
+                  <TodoLists
+                    title={title}
+                    id={id}
+                    created_at={created_at}
+                    key={id}
+                  />
+                );
+              })}
+            </>
+          )}
+        </section>
       </main>
     </div>
   );
