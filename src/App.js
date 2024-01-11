@@ -3,7 +3,6 @@ import { v4 as uuidv4 } from "uuid";
 import { getLocalStorage, setLocalStorage } from "./local_storage";
 import { TodoLoader } from "./components/TodoLoader";
 import { TodoLists } from "./components/TodoLists";
-import "./App.css";
 
 const todo_ls_name = process.env.REACT_APP_TODO_LOCAL_STORAGE_NAME;
 
@@ -34,16 +33,21 @@ function App() {
 
       const new_todos = [...todos, newTodo];
       setLocalStorage(todo_ls_name, new_todos);
-      // resetInput();
-      // fetch_todoist();
+      setTodoInput("");
+      fetch_todo();
     } catch (error) {
-      // showError(error.message);
+      setFormError(error.message);
     }
   };
-
+  const sort_ls_Todos = (todo_db) => {
+    return todo_db.sort((a, b) =>
+      a.created_at < b.created_at ? 1 : a.created_at > b.created_at ? -1 : 0
+    );
+  };
   const fetch_todo = function () {
     const _todos = getLocalStorage(todo_ls_name);
-    setTodos(_todos);
+    const sortedTodos = sort_ls_Todos(_todos);
+    setTodos(sortedTodos);
 
     setTimeout(() => {
       setLoadingTodos(false);
@@ -96,7 +100,7 @@ function App() {
             No Todos yet. Your Todo will appear here...
           </p>
         )}
-        <section className="bg-green-50 rounded-md p-2">
+        <section className="bg-green-50 rounded-md py-2">
           {loadingTodos ? (
             <>
               <TodoLoader />
