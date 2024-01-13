@@ -1,7 +1,8 @@
-import React from "react";
-
+import { useState } from "react";
+import { getLocalStorage, setLocalStorage } from "../local_storage";
 export const TodoLists = (props) => {
-  const { title, id, created_at } = props;
+  const { title, id, deleteTodo } = props;
+
   return (
     <div
       id="task"
@@ -27,9 +28,7 @@ export const TodoLists = (props) => {
             />
           </svg>
         </button>
-        <button
-        // onClick="(deleteTodo('${todo.id}'))"
-        >
+        <button onClick={() => deleteTodo(id)}>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"

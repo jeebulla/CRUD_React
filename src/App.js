@@ -12,6 +12,7 @@ function App() {
   const [todoInput, setTodoInput] = useState("");
   const [formError, setFormError] = useState(null);
 
+  //Creating a todo
   const create_Todo = function (e) {
     e.preventDefault();
     try {
@@ -39,11 +40,14 @@ function App() {
       setFormError(error.message);
     }
   };
+  //Sort todo list
   const sort_ls_Todos = (todo_db) => {
     return todo_db.sort((a, b) =>
       a.created_at < b.created_at ? 1 : a.created_at > b.created_at ? -1 : 0
     );
   };
+
+  //Fetch todo list from local storage
   const fetch_todo = function () {
     const _todos = getLocalStorage(todo_ls_name);
     const sortedTodos = sort_ls_Todos(_todos);
@@ -51,9 +55,16 @@ function App() {
 
     setTimeout(() => {
       setLoadingTodos(false);
-    }, 5000);
+    }, 3000);
   };
 
+  //Delete Todo
+  const deleteTodo = function (id) {
+    const allTodos = getLocalStorage("todo_db");
+    const newTodo = allTodos.filter((todo) => todo.id !== id);
+    setLocalStorage("todo_db", newTodo);
+    fetch_todo();
+  };
   useEffect(() => {
     fetch_todo();
   }, []);
@@ -61,8 +72,9 @@ function App() {
   return (
     <div>
       <header className="px-5 py-4 max-w-lg mx-auto">
-        <h2 className="text-center my-4 border-b-2 font-bold text-2xl text-slate-500">
-          <span className="text-green-300 text-3xl">Petels</span> TODOIST
+        <h2 className="text-left my-4 border-b-2 font-bold text-2xl text-slate-500">
+          <span className="text-green-300 text-3xl font-mono">Petels</span>{" "}
+          TODOIST
         </h2>
       </header>
       <main className="my-4 max-w-lg mx-auto p-2">
@@ -95,30 +107,31 @@ function App() {
             {formError.errorMessage}
           </span>
         )}
-        {!loadingTodos && todos.length === 0 && (
-          <p className="text-center text-sm my-1">
-            No Todos yet. Your Todo will appear here...
-          </p>
-        )}
         <section className="bg-green-50 rounded-md py-2">
           {loadingTodos ? (
             <>
               <TodoLoader />
               <TodoLoader />
-              <TodoLoader />
             </>
           ) : (
             <>
-              {todos.map(({ title, id, created_at }) => {
-                return (
-                  <TodoLists
-                    title={title}
-                    id={id}
-                    created_at={created_at}
-                    key={id}
-                  />
-                );
-              })}
+              {!loadingTodos && todos.length === 0 ? (
+                <p className="text-center text-sm my-1">
+                  No Todos yet. Your Todo will appear here...
+                </p>
+              ) : (
+                todos.map(({ title, id, created_at }) => {
+                  return (
+                    <TodoLists
+                      title={title}
+                      id={id}
+                      created_at={created_at}
+                      key={id}
+                      deleteTodo={deleteTodo}
+                    />
+                  );
+                })
+              )}
             </>
           )}
         </section>
